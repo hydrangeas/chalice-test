@@ -2,6 +2,8 @@ from chalice import Chalice, Response
 from chalice import BadRequestError
 from chalice import NotFoundError
 from urllib.parse import urlparse, parse_qs
+import json
+import gzip
 
 app = Chalice(app_name='helloworld')
 app.debug = True
@@ -76,6 +78,20 @@ def introspect():
 def index():
     parsed = parse_qs(app.current_request.raw_body.decode())
     return {'raw_body_decoded': parsed}
+
+
+app.api.binary_types.append('application/json')
+
+
+@app.route('/compress')
+def compress():
+    blob = json.dumps({'hello': 'world'}).encode('utf-8')
+    payload = gzip.compress(blob)
+    custom_headers = {
+        'Content-Type': 'application/json',
+        'Content-Encoding': 'gzip'
+    }
+    return Response(body=payload, status_code=200, headers=custom_headers)
 
 # The view function above will return {"hello": "world"}
 # whenever you make an HTTP GET request to '/'.
