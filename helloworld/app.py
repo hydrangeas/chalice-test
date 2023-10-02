@@ -1,6 +1,7 @@
 from chalice import Chalice
 from chalice import BadRequestError
 from chalice import NotFoundError
+from urllib.parse import urlparse, parse_qs
 
 app = Chalice(app_name='helloworld')
 app.debug = True
@@ -69,6 +70,12 @@ def myobject(key):
 @app.route('/introspect')
 def introspect():
     return app.current_request.to_dict()
+
+
+@app.route('/', methods=['POST'], content_types=['application/x-www-form-urlencoded'])
+def index():
+    parsed = parse_qs(app.current_request.raw_body.decode())
+    return {'raw_body_decoded': parsed}
 
 # The view function above will return {"hello": "world"}
 # whenever you make an HTTP GET request to '/'.
