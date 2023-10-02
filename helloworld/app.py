@@ -1,4 +1,4 @@
-from chalice import Chalice
+from chalice import Chalice, Response
 from chalice import BadRequestError
 from chalice import NotFoundError
 from urllib.parse import urlparse, parse_qs
@@ -59,7 +59,7 @@ OBJECTS = {}
 def myobject(key):
     if app.current_request.method == 'PUT':
         OBJECTS[key] = app.current_request.json_body
-        return {"success": True}
+        return Response(body={"success": True}, status_code=201)
     elif app.current_request.method == 'GET':
         try:
             return OBJECTS[key]
