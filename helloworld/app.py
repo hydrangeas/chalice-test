@@ -1,5 +1,6 @@
 from chalice import Chalice
 from chalice import BadRequestError
+from chalice import NotFoundError
 
 app = Chalice(app_name='helloworld')
 app.debug = True
@@ -48,6 +49,26 @@ def myview_post():
 @app.route('/myview2', methods=['PUT'])
 def myview_put():
     pass
+
+
+OBJECTS = {}
+
+
+@app.route('/objects/{key}', methods=['GET', 'PUT'])
+def myobject(key):
+    if app.current_request.method == 'PUT':
+        OBJECTS[key] = app.current_request.json_body
+        return {"success": True}
+    elif app.current_request.method == 'GET':
+        try:
+            return OBJECTS[key]
+        except KeyError:
+            raise NotFoundError(key)
+
+
+@app.route('/introspect')
+def introspect():
+    return app.current_request.to_dict()
 
 # The view function above will return {"hello": "world"}
 # whenever you make an HTTP GET request to '/'.
