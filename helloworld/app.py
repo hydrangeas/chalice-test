@@ -7,10 +7,21 @@ app = Chalice(app_name='helloworld')
 def index():
     return {'hello': 'world'}
 
+
 @app.route('/hello/{name}')
 def index(name):
     return {'hello': name}
 
+
+CITIES_TO_STATE = {
+    'seattle': 'WA',
+    'portland': 'OR',
+}
+
+
+@app.route('/cities/{city}')
+def state_of_city(city: str) -> dict:
+    return {'state': CITIES_TO_STATE[city]}
 
 
 # The view function above will return {"hello": "world"}
